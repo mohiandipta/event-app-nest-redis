@@ -1,73 +1,154 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Event Management Server
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Step 1: Setup Database and Cache
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### PostgreSQL
+Run a PostgreSQL container on your local machine based on environment variables provided in `.env.example` and `docker-compose.yml`.
 
-## Description
+**Or**
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ npm install
+Execute a PostgreSQL server with the following credentials on your local machine:
+```
+# DATABASE
+DB_USERNAME=postgres
+DB_PASSWORD=pgdb
+DB_ROOT_PASSWORD=root
+DB_NAME=event_db
+DB_PORT=5432
+DB_DOCKER_PORT=5432
+DB_HOST=localhost
+DB_DIALECT=postgres
 ```
 
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+### Redis
+Run a Redis server using the following Docker command:
+```
+docker run --name redis-server -d -p 6379:6379 -v /path/to/redis.conf:/usr/local/etc/redis/redis.conf redis redis-server /usr/local/etc/redis/redis.conf
 ```
 
-## Test
+---
 
-```bash
-# unit tests
-$ npm run test
+## Step 2: Start the Server
 
-# e2e tests
-$ npm run test:e2e
+### Event Management Server
+Run the project with the following commands:
 
-# test coverage
-$ npm run test:cov
+Start the server:
+```
+npm run start
 ```
 
-## Support
+Start the server in watch mode:
+```
+npm run start:dev
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Swagger API Documentation
+Access Swagger documentation at:
+```
+http://localhost:5001/api-docs
+```
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## API Endpoints
 
-## License
+### Event Endpoints
 
-Nest is [MIT licensed](LICENSE).
+**Create Event**
+```
+POST - http://localhost:5001/api/v1/events
+```
+**Body:**
+```
+{
+   "name": "Trade Fair",
+   "description": "National Trade Fair",
+   "date": "2025-02-25",
+   "location": "Purbachal",
+   "maxAttendees": 200
+}
+```
+
+**Get All Events**
+```
+GET - http://localhost:5001/api/v1/events
+```
+
+**Get Event by ID**
+```
+GET - http://localhost:5001/api/v1/events/:id
+```
+
+**Search Events**
+```
+GET - http://localhost:5001/api/v1/attendees/search?query=mohian
+```
+
+---
+
+### Attendee Endpoints
+
+**Create Attendee**
+```
+POST - http://localhost:5001/api/v1/attendees
+```
+**Body:**
+```
+{
+   "name": "Mohian",
+   "email": "mohian@gmail.com"
+}
+```
+
+**Get All Attendees**
+```
+GET - http://localhost:5001/api/v1/attendees
+```
+
+**Get Attendee by ID**
+```
+GET - http://localhost:5001/api/v1/attendees/:id
+```
+
+**Search Attendees**
+```
+GET - http://localhost:5001/api/v1/attendees/search?query=mohian
+```
+
+---
+
+### Registration Endpoints
+
+**Register Attendee for Event**
+```
+POST - http://localhost:5001/api/v1/registration
+```
+**Body:**
+```
+{
+   "eventId": "8d8a721b-5821-48dc-8f3d-9f93dcf8cd8a",
+   "attendeeId": "1c3dfce7-7054-4e5f-a31b-5b764721dc4f"
+}
+```
+
+**Get Registration by ID**
+```
+GET - http://localhost:5001/api/v1/registration/:id
+```
+
+**Get Registrations by Event ID**
+```
+GET - http://localhost:5001/api/v1/registration/:eventId
+```
+
+---
+
+<!-- ## License -->
+<!-- MIT License -->
+
+---
+
+## Author
+Developed by [Mohian Mustafa]
+
