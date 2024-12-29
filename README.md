@@ -23,7 +23,7 @@ DB_DIALECT=postgres
 ### Redis
 Run a Redis server using the following Docker command:
 ```
-docker run --name redis-server -d -p 6379:6379 -v /path/to/redis.conf:/usr/local/etc/redis/redis.conf redis redis-server /usr/local/etc/redis/redis.conf
+docker run --name redis-server -d -p 6389:6379 -v /path/to/redis.conf:/usr/local/etc/redis/redis.conf redis redis-server /usr/local/etc/redis/redis.conf
 ```
 
 ---
