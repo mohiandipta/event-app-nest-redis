@@ -1,0 +1,59 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - TZ=Asia/Dhaka  # Replace with your host timezone
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=pgdb
+      - DB_NAME=event_db
+      - DB_PORT=5432
+      - DB_HOST=db  # Matches the service name of the database container
+      - DB_DIALECT=postgres
+      - REDIS_HOST=redis  # Service name used to connect to Redis
+      - REDIS_PORT=6389   # Matching the Redis container's internal port
+    networks:
+      - mynetwork
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pgdb
+      POSTGRES_DB: event_db
+    ports:
+      - "${DB_DOCKER_PORT}:${DB_PORT}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - mynetwork
+
+  redis:
+    image: redis:alpine
+    container_name: redis_cache
+    restart: always
+    ports:
+      - "6389:6379"  # Exposing Redis on port 6389 externally
+    volumes:
+      - redis_data:/data
+    networks:
+      - mynetwork
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  mynetwork:
+    driver: bridge
